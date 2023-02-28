@@ -2,7 +2,7 @@
 
 This is the repository containing the source code for the Back End Server for the Job Application recruitment service.
 
-This Readme file contains information related to initilization, installation and necessary frameworks needed to run the application.
+This Readme file contains information related to initilization, installation and general information on how to run the application.
 
 ## Setup
 
@@ -13,6 +13,9 @@ To run the application in chosen IDE the following frameworks, dev-tools and dep
  * Spring Secuirty: 6.0 or later
  * Maven Project Management Tool
  * JPA/Hibernate: 6.0 or later
+ * JSON WEB TOKEN (io.jsonwebtoken): Version 0.11.5
+
+Adding new dependencies or updating existing ones is done by changing the content of the pom.xml file.
 
 ### Database
 
@@ -32,5 +35,7 @@ The application uses Heroku-Postgres and can be configured in the application.pr
 
 ## Security
 
-Security of the application is handled in the __WebSecurityConfig__ class.
+Security of the application is handled in the __WebSecurityConfig__ class of the security package. Changes to permitted endpoints, request-methods and authorization is done in the __securityFilterChain__ Bean. Changes to CORS-configuration on allowed headers, methods and origin of requests is done in the __corsConfigurationSource__ Bean.
+
+The application uses JWT-tokens to authorize and identify users by checking the Authorization header of every request done to this application. To change how these are handled one could modify the __JWTAuthenticateFilter__ class in the security package. Changing the expiration date or how tokens are generated is done in the __JWTService__ class.
 
