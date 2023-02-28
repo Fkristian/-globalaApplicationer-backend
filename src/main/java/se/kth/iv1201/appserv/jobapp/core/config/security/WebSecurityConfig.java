@@ -46,6 +46,7 @@ public class WebSecurityConfig {
                 .disable()
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests()
+                .requestMatchers("/api/v1/demo-Controller").permitAll()
                 .requestMatchers("/api/application/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("1")
                 .requestMatchers("/api/v1/auth/**")
