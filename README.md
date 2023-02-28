@@ -20,9 +20,9 @@ Adding new dependencies or updating existing ones is done by changing the conten
 ### Database
 
 The application uses PostGreSQL relational database as the internal database to manage data. 
-The application.propeties should contain the necessary datasource information and env variables, together with the pom.xml database dependencies. For local testing run the __existing-database.sql__ script in the psql CLI. After creating the database, connect it to the application and it should be able to run Back End transactions.
+The __application.propeties__ should contain the necessary datasource information and env variables, together with the pom.xml database dependencies. For local testing run the __existing-database.sql__ script in the psql CLI. After creating the database, connect it to the application and it should be able to run Back End transactions.
 
-The database is then handled in the application by Hibernate/JPA, which can be configured in the application.properties file. An example is to view queries run by Hibernate in the console set: __spring.jpa.show-sql=true__. 
+The database is then handled in the application by Hibernate/JPA, which can be configured in the __application.properties__ file. An example is to view queries run by Hibernate in the console set: __spring.jpa.show-sql=true__ within that file. 
 
 ### Deployment
 
@@ -32,7 +32,7 @@ The application is deployed on Heroku cloud platform and can be reached by the b
 
 Where REST endpoints can be tested using a API platform such a Postman.
 
-The application uses Heroku-Postgres and can be configured in the application.properties to change the env variables if another database is required after deployment on Heroku.
+The application uses Heroku-Postgres and can be configured in the __application.properties__ to change the env variables if another database is required after deployment on Heroku.
 
 ## Security
 
@@ -40,3 +40,8 @@ Security of the application is handled in the __WebSecurityConfig__ class of the
 
 The application uses JWT-tokens to authorize and identify users by checking the Authorization header of every request done to this application. To change how these are handled one could modify the __JWTAuthenticateFilter__ class in the security package. Changing the expiration date or how tokens are generated is done in the __JWTService__ class.
 
+## Execution
+
+For localtesting firts build the application and then run it using ur IDE. 
+
+Endpoints can then be tested by writing out the localhost URL in chosen browser or using an API platform like Postman.
