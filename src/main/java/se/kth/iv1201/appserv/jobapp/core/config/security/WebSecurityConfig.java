@@ -71,7 +71,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("80.216.64.1380"));
+        configuration.setAllowedOrigins(Arrays.asList("https://frontendjobbapp.herokuapp.com/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("X-Requested-With","X-HTTP-Method-Override","Content-Type","Authorization","Accept","Access-Control-Allow-Credentials","Access-Control-Allow-Origin"));
         UrlBasedCorsConfigurationSource soruce = new UrlBasedCorsConfigurationSource();
