@@ -6,8 +6,9 @@ This Readme file contains information related to initilization, installation and
 
 ## Setup
 
-To run the application in chosen IDE the following frameworks and dependencies are required:
+To run the application in chosen IDE the following frameworks, dev-tools and dependencies are required:
 
+ * Java Development Kit: Version 17 (Coretto)
  * Spring Boot: Version 3.0 or later
  * Spring Secuirty: 6.0 or later
  * Maven Project Management Tool
@@ -15,4 +16,21 @@ To run the application in chosen IDE the following frameworks and dependencies a
 
 ### Database
 
-The application uses PostGreSQL relational database. The application.propeties should contain the necessary datasource information. What is missing is running the __existing-database.sql__ script in the psql CLI.
+The application uses PostGreSQL relational database as the internal database to manage data. 
+The application.propeties should contain the necessary datasource information and env variables, together with the pom.xml database dependencies. For local testing run the __existing-database.sql__ script in the psql CLI. After creating the database, connect it to the application and it should be able to run Back End transactions.
+
+
+### Deployment
+
+The application is deployed on Heroku cloud platform and can be reached by the base url:
+
+<https://backendjobbapp.herokuapp.com/>
+
+Where REST endpoints can be tested using a API platform such a Postman.
+
+The application uses Heroku-Postgres and can be configured in the application.properties to change the env variables if another database is required after deployment on Heroku.
+
+## Security
+
+Security of the application is handled in the __WebSecurityConfig__ class.
+
