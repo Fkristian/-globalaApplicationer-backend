@@ -70,15 +70,21 @@ public class ApplicationService {
     public ResponseEntity <?> postApplication(ApplicationRequest applicationRequest, HttpServletRequest request) throws IllegalUserAuthenticationException, IllegalJobApplicationUpdateException {
         String username = getUserFromToken(request);
         User user = userRepository.findByUsername(username);
+        if(user == null) {
+            throw new IllegalUserAuthenticationException("The user could not be authenticated to make the application");
+        }
         insertAvailability(applicationRequest, user.getPersonId());
         insertCompetence(applicationRequest, user.getPersonId());
-
         ApplicationStatus status = applicationStatusRepository.findByPersonId(user.getPersonId());
+        if(status == null){
+            throw new IllegalJobApplicationUpdateException("Status information about the application was missing");
+        }
         status.setStatus("unhandled");
         applicationStatusRepository.save(status);
 
         return ResponseEntity.ok().build();
     }
+
 
     /**
      * Method used to update a specified application with a new status.
@@ -132,12 +138,10 @@ public class ApplicationService {
 
     private String getUserFromToken(HttpServletRequest request) throws IllegalUserAuthenticationException {
         String authHeader = request.getHeader("Authorization");
-        if(authHeader!=null){
-        String jwt = authHeader.substring(7);
-        return jwtService.extractUsername(jwt);
-        }
-        else{
+        if(authHeader==null) {
             throw new IllegalUserAuthenticationException("Authorization could not be preformed");
         }
+        String jwt = authHeader.substring(7);
+        return jwtService.extractUsername(jwt);
     }
 }
