@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * A class representing an error-message that can be sent to the Front End.
+ */
 @Data
 @AllArgsConstructor
 public class ErrorMessage {

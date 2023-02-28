@@ -18,8 +18,19 @@ import java.net.ConnectException;
 import java.sql.SQLException;
 import java.util.Date;
 
+/**
+ * Class that handles all specified exceptions thrown by the application by returning
+ * given status codes to the Front End.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    /**
+     * Method that handles user and user authentication related exceptions by returning a
+     * status code to the Front End.
+     * @param e the exception thrown related to user authentication errors.
+     * @param request the web-request done while attempting operations.
+     * @return a response-entity containing the error-message and status code.
+     */
     @ExceptionHandler(value = {IllegalUserAuthenticationException.class} )
     public ResponseEntity <ErrorMessage> handleUserAuthenticationException(IllegalUserAuthenticationException e, WebRequest request){
         ErrorMessage message = new ErrorMessage(
@@ -29,6 +40,13 @@ public class GlobalExceptionHandler {
                 request.getDescription(false));
         return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
     }
+    /**
+     * Method that handles application submission related exceptions by returning a
+     * status code to the Front End.
+     * @param e the exception thrown related to application errors.
+     * @param request the web-request done while attempting operations.
+     * @return a response-entity containing the error-message and status code.
+     */
     @ExceptionHandler(value = {IllegalJobApplicationUpdateException.class, OptimisticLockException.class} )
     public ResponseEntity <ErrorMessage> handleApplicationException(IllegalJobApplicationUpdateException e, WebRequest request){
         String msg;
@@ -46,6 +64,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.PRECONDITION_FAILED);
     }
 
+    /**
+     * Method that handles user registration related exceptions by returning a
+     * status code to the Front End.
+     * @param e the exception thrown related to user registration errors.
+     * @param request the web-request done while attempting operations.
+     * @return a response-entity containing the error-message and status code.
+     */
     @ExceptionHandler(value = {IllegalUserRegisterException.class} )
     public ResponseEntity <ErrorMessage> handleRegisterException(IllegalUserRegisterException e, WebRequest request){
         ErrorMessage message = new ErrorMessage(
@@ -56,17 +81,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Method that handles exceptions if the database would potentially crash.
+     * @param e the exception thrown if the database would go down.
+     * @return status code depending on how it went down.
+     */
     @ExceptionHandler(value = {CannotCreateTransactionException.class})
-    public ResponseEntity<?> cannotCreateTransactionException(CannotCreateTransactionException exception) {
-        if (exception.contains(ConnectException.class)) {
+    public ResponseEntity<?> cannotCreateTransactionException(CannotCreateTransactionException e) {
+        if (e.contains(ConnectException.class)) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    /**
+     * Method that handles general SQL exceptions thrown when a transaction might not complete.
+     * @param request the web-request done while attempting operations.
+     * @return a response-entity containing the error-message and status code.
+     */
     @ExceptionHandler(value = {SQLException.class})
-    public ResponseEntity<?> generalSQLException(CannotCreateTransactionException e, WebRequest request)  {
+    public ResponseEntity<?> generalSQLException(WebRequest request)  {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new Date(),
@@ -75,6 +110,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Method that handles exceptions related to the JWT token and authentication.
+     * @param request the web-request done while attempting operations.
+     * @return a response-entity containing the error-message and status code.
+     */
     @ExceptionHandler(value = {MalformedJwtException.class, PrematureJwtException.class})
     public ResponseEntity<?> generalSQLException(WebRequest request)  {
         ErrorMessage message = new ErrorMessage(
