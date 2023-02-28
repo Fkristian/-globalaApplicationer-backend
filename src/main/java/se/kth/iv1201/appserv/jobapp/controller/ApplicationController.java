@@ -18,7 +18,6 @@ import se.kth.iv1201.appserv.jobapp.exceptions.IllegalJobApplicationUpdateExcept
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalUserAuthenticationException;
 import se.kth.iv1201.appserv.jobapp.service.ApplicationService;
 
-import java.util.List;
 
 /**
  * Class responsible to communicate with the Front End with

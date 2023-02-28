@@ -31,10 +31,17 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(value = {IllegalJobApplicationUpdateException.class, OptimisticLockException.class} )
     public ResponseEntity <ErrorMessage> handleApplicationException(IllegalJobApplicationUpdateException e, WebRequest request){
+        String msg;
+        if(e != null) {
+            msg = e.getMessage();
+        }
+        else{
+            msg = "Someone already tried to update that user.";
+        }
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.PRECONDITION_FAILED.value(),
                 new Date(),
-                e.getMessage(),
+                msg,
                 request.getDescription(false));
         return new ResponseEntity<>(message, HttpStatus.PRECONDITION_FAILED);
     }
@@ -65,7 +72,17 @@ public class GlobalExceptionHandler {
                 new Date(),
                 "An unknown error occurred updating the database.",
                 request.getDescription(false));
-            return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = {MalformedJwtException.class, PrematureJwtException.class})
+    public ResponseEntity<?> generalSQLException(WebRequest request)  {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.UNAUTHORIZED.value(),
+                new Date(),
+                "An error occurred when validating the token.",
+                request.getDescription(false));
+        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
     }
 }
 
