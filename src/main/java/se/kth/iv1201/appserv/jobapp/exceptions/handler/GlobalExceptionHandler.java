@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
      * @return a response-entity containing the error-message and status code.
      */
     @ExceptionHandler(value = {MalformedJwtException.class, PrematureJwtException.class})
-    public ResponseEntity<?> generalSQLException(WebRequest request)  {
+    public ResponseEntity<?> generalTokenException(WebRequest request)  {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.UNAUTHORIZED.value(),
                 new Date(),
