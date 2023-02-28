@@ -42,6 +42,6 @@ The application uses JWT-tokens to authorize and identify users by checking the 
 
 ## Execution
 
-For localtesting firts build the application and then run it using ur IDE. 
+For localtesting first build the application and then run it using your IDE. 
 
 Endpoints can then be tested by writing out the localhost URL in chosen browser or using an API platform like Postman.
