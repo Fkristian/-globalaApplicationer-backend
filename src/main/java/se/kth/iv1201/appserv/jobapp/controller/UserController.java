@@ -24,7 +24,7 @@ import java.util.List;
  * requests related to user and user authorization management.
  */
 @RestController
-@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com/")
+@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com")
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class UserController {

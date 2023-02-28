@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com/")
+@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com")
 @RequestMapping("/admin")
 public class AdminController {
 

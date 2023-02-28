@@ -24,7 +24,7 @@ import se.kth.iv1201.appserv.jobapp.service.ApplicationService;
  * requests related to application management.
  */
 @RestController
-@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com/")
+@CrossOrigin(origins = "https://frontendjobbapp.herokuapp.com")
 @RequestMapping("/api/application")
 @AllArgsConstructor
 public class ApplicationController {
