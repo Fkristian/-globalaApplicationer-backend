@@ -10,6 +10,9 @@ To run the application in chosen IDE the following frameworks and dependencies a
 
  * Spring Boot: Version 3.0 or later
  * Spring Secuirty: 6.0 or later
- * Maven framework
+ * Maven Project Management Tool
  * JPA/Hibernate: 6.0 or later
 
+### Database
+
+The application uses PostGreSQL relational database. The application.propeties should contain the necessary datasource information. What is missing is running the __existing-database.sql__ script in the psql CLI.
