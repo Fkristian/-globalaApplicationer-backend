@@ -10,7 +10,7 @@ To run the application in chosen IDE the following frameworks, dev-tools and dep
 
  * Java Development Kit: Version 17 (Coretto)
  * Spring Boot: Version 3.0 or later
- * Spring Secuirty: 6.0 or later
+ * Spring Security: 6.0 or later
  * Maven Project Management Tool
  * JPA/Hibernate: 6.0 or later
  * JSON WEB TOKEN (io.jsonwebtoken): Version 0.11.5
@@ -22,6 +22,7 @@ Adding new dependencies or updating existing ones is done by changing the conten
 The application uses PostGreSQL relational database as the internal database to manage data. 
 The application.propeties should contain the necessary datasource information and env variables, together with the pom.xml database dependencies. For local testing run the __existing-database.sql__ script in the psql CLI. After creating the database, connect it to the application and it should be able to run Back End transactions.
 
+The database is then handled in the application by Hibernate/JPA, which can be configured in the application.properties file. An example is to view queries run by Hibernate in the console set: __spring.jpa.show-sql=true__. 
 
 ### Deployment
 
