@@ -77,10 +77,12 @@ public class ApplicationService {
         insertCompetence(applicationRequest, user.getPersonId());
         ApplicationStatus status = applicationStatusRepository.findByPersonId(user.getPersonId());
         if(status == null){
-            throw new IllegalJobApplicationUpdateException("Status information about the application was missing");
+            buildApplication(user.getPersonId());
         }
-        status.setStatus("unhandled");
-        applicationStatusRepository.save(status);
+        else{
+            status.setStatus("unhandled");
+            applicationStatusRepository.save(status);
+        }
 
         return ResponseEntity.ok().build();
     }
@@ -143,5 +145,13 @@ public class ApplicationService {
         }
         String jwt = authHeader.substring(7);
         return jwtService.extractUsername(jwt);
+    }
+
+    private void buildApplication(int personId){
+        var status = ApplicationStatus.builder()
+                .personId(personId)
+                .status("unhandled")
+                .build();
+        applicationStatusRepository.save(status);
     }
 }
