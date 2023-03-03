@@ -3,16 +3,6 @@ package se.kth.iv1201.appserv.jobapp.exceptions.handler;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.PrematureJwtException;
 import jakarta.persistence.OptimisticLockException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.CannotCreateTransactionException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-package se.kth.iv1201.appserv.jobapp.exceptions.handler;
-
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.PrematureJwtException;
-import jakarta.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
