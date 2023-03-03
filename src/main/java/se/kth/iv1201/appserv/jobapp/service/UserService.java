@@ -1,6 +1,8 @@
 package se.kth.iv1201.appserv.jobapp.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +17,7 @@ import se.kth.iv1201.appserv.jobapp.domain.external.request.LogInRequest;
 import se.kth.iv1201.appserv.jobapp.domain.external.response.AuthenticationResponse;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalUserAuthenticationException;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalUserRegisterException;
+import se.kth.iv1201.appserv.jobapp.exceptions.handler.GlobalExceptionHandler;
 import se.kth.iv1201.appserv.jobapp.repository.ApplicationStatusRepository;
 import se.kth.iv1201.appserv.jobapp.repository.UserRepository;
 
@@ -34,6 +37,8 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final ApplicationStatusRepository applicationStatusRepository;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Method used to insert a new user into the database.
      *
@@ -42,6 +47,7 @@ public class UserService {
      * authentication token, if the transaction completed.
      */
     public ResponseEntity<AuthenticationResponse> register(RegisterRequest request) throws IllegalUserRegisterException {
+        LOGGER.info("User attempted to register account");
         if(userRepository.findByUsername(request.getUsername()) == null) {
             var user = User.builder()
                     .name(request.getFirstname())
@@ -61,6 +67,7 @@ public class UserService {
             applicationStatusRepository.save(status);
 
             var jwtToken = jwtService.generateToken(user);
+            LOGGER.info("Account successfully registered by" +request.getUsername());
             return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtToken).build());
         } else {
             throw new IllegalUserRegisterException("A user already exists with the username: " +request.getUsername());
@@ -75,7 +82,7 @@ public class UserService {
      * authentication token, if the transaction completed.
      */
     public AuthenticationResponse authenticate(LogInRequest request) throws IllegalUserAuthenticationException {
-
+        LOGGER.info(request.getUsername()+ " attempted to authenticate account.");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -87,6 +94,7 @@ public class UserService {
             throw new IllegalUserAuthenticationException("The user with the " + request.getUsername() + " could not be found.");
         }
         var jwtToken = jwtService.generateToken(user);
+        LOGGER.info(request.getUsername()+ " successfully logged in.");
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 

@@ -8,7 +8,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+package se.kth.iv1201.appserv.jobapp.exceptions.handler;
+
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.PrematureJwtException;
+import jakarta.persistence.OptimisticLockException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import se.kth.iv1201.appserv.jobapp.exceptions.ErrorMessage;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalJobApplicationUpdateException;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalUserAuthenticationException;
@@ -23,7 +36,10 @@ import java.util.Date;
  * given status codes to the Front End.
  */
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Method that handles user and user authentication related exceptions by returning a
      * status code to the Front End.
@@ -32,13 +48,10 @@ public class GlobalExceptionHandler {
      * @return a response-entity containing the error-message and status code.
      */
     @ExceptionHandler(value = {IllegalUserAuthenticationException.class} )
-    public ResponseEntity <ErrorMessage> handleUserAuthenticationException(IllegalUserAuthenticationException e, WebRequest request){
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.UNAUTHORIZED.value(),
-                new Date(),
-                e.getMessage(),
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity <?> handleUserAuthenticationException(IllegalUserAuthenticationException e, WebRequest request){
+        LOGGER.warn(HttpStatus.UNAUTHORIZED+ " error caused by: " +e.getMessage()+
+                "\tAccessing: " +request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     /**
      * Method that handles application submission related exceptions by returning a
@@ -48,7 +61,7 @@ public class GlobalExceptionHandler {
      * @return a response-entity containing the error-message and status code.
      */
     @ExceptionHandler(value = {IllegalJobApplicationUpdateException.class, OptimisticLockException.class} )
-    public ResponseEntity <ErrorMessage> handleApplicationException(IllegalJobApplicationUpdateException e, WebRequest request){
+    public ResponseEntity <?> handleApplicationException(IllegalJobApplicationUpdateException e, WebRequest request){
         String msg;
         if(e != null) {
             msg = e.getMessage();
@@ -56,12 +69,10 @@ public class GlobalExceptionHandler {
         else{
             msg = "Someone already tried to update that user.";
         }
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.PRECONDITION_FAILED.value(),
-                new Date(),
-                msg,
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.PRECONDITION_FAILED);
+        LOGGER.warn(HttpStatus.PRECONDITION_FAILED+
+                " error caused by: " +msg+
+                "\tAccessing: " +request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
     }
 
     /**
@@ -72,13 +83,10 @@ public class GlobalExceptionHandler {
      * @return a response-entity containing the error-message and status code.
      */
     @ExceptionHandler(value = {IllegalUserRegisterException.class} )
-    public ResponseEntity <ErrorMessage> handleRegisterException(IllegalUserRegisterException e, WebRequest request){
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.CONFLICT.value(),
-                new Date(),
-                e.getMessage(),
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.CONFLICT);
+    public ResponseEntity <?> handleRegisterException(IllegalUserRegisterException e, WebRequest request){
+        LOGGER.warn(HttpStatus.CONFLICT+ " error caused by: " +e.getMessage()+
+                "\tAccessing: " +request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     /**
@@ -87,10 +95,12 @@ public class GlobalExceptionHandler {
      * @return status code depending on how it went down.
      */
     @ExceptionHandler(value = {CannotCreateTransactionException.class})
-    public ResponseEntity<?> cannotCreateTransactionException(CannotCreateTransactionException e) {
+    public ResponseEntity <?> cannotCreateTransactionException(CannotCreateTransactionException e) {
         if (e.contains(ConnectException.class)) {
+            LOGGER.error(HttpStatus.SERVICE_UNAVAILABLE +" error caused by no connection to the database.");
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }else {
+            LOGGER.error(HttpStatus.INTERNAL_SERVER_ERROR+" caused by database failure.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -100,14 +110,11 @@ public class GlobalExceptionHandler {
      * @param request the web-request done while attempting operations.
      * @return a response-entity containing the error-message and status code.
      */
-    @ExceptionHandler(value = {SQLException.class})
-    public ResponseEntity<?> generalSQLException(WebRequest request)  {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                new Date(),
-                "An unknown error occurred updating the database.",
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(value = {SQLException.class, NullPointerException.class})
+    public ResponseEntity <?> generalSQLException(WebRequest request)  {
+        LOGGER.error(HttpStatus.INTERNAL_SERVER_ERROR.value()+ " " +HttpStatus.INTERNAL_SERVER_ERROR+ " error caused by: An unknown error occurred updating the database."+
+                "\tAccessing: " +request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     /**
@@ -116,13 +123,10 @@ public class GlobalExceptionHandler {
      * @return a response-entity containing the error-message and status code.
      */
     @ExceptionHandler(value = {MalformedJwtException.class, PrematureJwtException.class})
-    public ResponseEntity<?> generalTokenException(WebRequest request)  {
-        ErrorMessage message = new ErrorMessage(
-                HttpStatus.UNAUTHORIZED.value(),
-                new Date(),
-                "An error occurred when validating the token.",
-                request.getDescription(false));
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity <?> generalTokenException(WebRequest request)  {
+        LOGGER.warn(HttpStatus.UNAUTHORIZED.value()+ " " +HttpStatus.UNAUTHORIZED+ " error caused by: An error occurred when validating the token. " +
+                "\tAccessing: " +request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
 

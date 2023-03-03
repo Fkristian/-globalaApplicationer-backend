@@ -3,6 +3,8 @@ package se.kth.iv1201.appserv.jobapp.service;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import se.kth.iv1201.appserv.jobapp.domain.internal.Competences;
 import se.kth.iv1201.appserv.jobapp.domain.internal.Dates;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalJobApplicationUpdateException;
 import se.kth.iv1201.appserv.jobapp.exceptions.IllegalUserAuthenticationException;
+import se.kth.iv1201.appserv.jobapp.exceptions.handler.GlobalExceptionHandler;
 import se.kth.iv1201.appserv.jobapp.repository.ApplicationStatusRepository;
 import se.kth.iv1201.appserv.jobapp.repository.AvailabilityRepository;
 import se.kth.iv1201.appserv.jobapp.repository.CompetenceProfileRepository;
@@ -40,6 +43,8 @@ public class ApplicationService {
     private final CompetenceProfileRepository competenceProfileRepository;
     private final JwtService jwtService;
     private final ApplicationStatusRepository applicationStatusRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Method used to retrieve all the applications, by utilizing {@code inner join} JPA queries.
@@ -69,6 +74,7 @@ public class ApplicationService {
      */
     public ResponseEntity <?> postApplication(ApplicationRequest applicationRequest, HttpServletRequest request) throws IllegalUserAuthenticationException, IllegalJobApplicationUpdateException {
         String username = getUserFromToken(request);
+        LOGGER.info(username+ "attempted to post a new application.");
         User user = userRepository.findByUsername(username);
         if(user == null) {
             throw new IllegalUserAuthenticationException("The user could not be authenticated to make the application");
@@ -83,7 +89,7 @@ public class ApplicationService {
             status.setStatus("unhandled");
             applicationStatusRepository.save(status);
         }
-
+        LOGGER.info(username+ "successfully posted a new application.");
         return ResponseEntity.ok().build();
     }
 
@@ -95,10 +101,13 @@ public class ApplicationService {
      * @return an HTTP-status code to inform the Front End how the transaction went.
      */
     public ResponseEntity <?> updateApplicationStatus(StatusRequst statusRequest) throws IllegalJobApplicationUpdateException {
+        LOGGER.info("An Admin attempted to update an application belonging to the person with ID: " +statusRequest.getPersonId()+
+                " and status: " +statusRequest.getStatus());
         ApplicationStatus status = applicationStatusRepository.findByPersonId(statusRequest.getPersonId());
         if(statusRequest.getVersion() == status.getVersion()){
             status.setStatus(statusRequest.getStatus());
             applicationStatusRepository.saveAndFlush(status);
+            LOGGER.info("The application was successfully updated to having status: " +statusRequest.getStatus());
             return ResponseEntity.ok().build();
         }
         else{
